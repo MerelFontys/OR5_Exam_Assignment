@@ -24,7 +24,7 @@ def main():
     print('\n Greedy') # Print de machine schedule
     print(f'     {total_tardiness_greedy = :.2f}') # Print de total tardiness
     print(f'     {total_cost_penalties = :.2f}') # Print de total cost in penalties
-    print('De Discrete Improving Search aan het laden... Dit kan even duren (20sec)')
+    print('\n Discrete Improving Search aan het laden... Dit kan even duren (ongeveer 30sec op mijn laptop in ieder geval)')
 
     # -------------------------------
     # Stats Discrete Improved Search (Insertion)
@@ -33,21 +33,11 @@ def main():
     total_tardiness_imp_grd = h.calculate_total_tardiness(orders_info, improved_grd_comp_times)
     total_cost_imp_grd = h.calculate_penalty_cost(orders_info, improved_grd_comp_times)
 
-    print('\n Improved Greedy (insertion)') # Print de machine schedule
+    print('\n Improved Search Greedy (insertion)') # Print de machine schedule
     print(f'     {total_tardiness_imp_grd = :.2f}') # Print de total tardiness
-    print(f'     {total_cost_imp_grd = :.2f}') # Print de total cost in penalties
+    print(f'     {total_cost_imp_grd = :.2f} \n') # Print de total cost in penalties
 
     # -------------------------------
-    # Stats Discrete Improved Search (Insertion)
-    double_imp_schedule = im.improving_search(improved_greedy_schedule, machines, setups, orders_info)[0]
-    double_imp_comp_times = h.calculate_completion_times(double_imp_schedule, machines, setups)
-    total_tardiness_double_improved = h.calculate_total_tardiness(orders_info, double_imp_comp_times)
-    total_cost_double_improved = h.calculate_penalty_cost(orders_info, double_imp_comp_times)
-
-    print('\n Double Improved (insertion)') # Print de machine schedule
-    print(f'     {total_tardiness_double_improved = :.2f}') # Print de total tardiness
-    print(f'     {total_cost_double_improved = :.2f} \n') # Print de total cost in penalties
-
     # exporteren van excel file ----- probleem? -> Windows R --> C:\Users\Merel\ --> november
     output_path = Path(__file__).parent / "Paintshop_Schedule_November.xlsx"
     data = h.schedule_data(orders_info, machines, setups)
