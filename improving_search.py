@@ -62,8 +62,8 @@ def improving_search(schedule, machines, setups, orders_info):
         schedule = best_schedule  # als alle mogelijkheden zijn doorlopen, past het schema aan
         new_cost = best_cost_this_round
 
-
-        iterations += 1 # tempstopconditie
+        '''XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'''
+        iterations += 1 # temp stopconditie
         if iterations > 5:
             improved_this_round = False
         
