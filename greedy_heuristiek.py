@@ -54,6 +54,7 @@ def greedy_schedule(orders_info, machines, setup_times):
 
         machine_row = h.get_machine(machines, chosen)
         duration = h.processing_time(order, machine_row)
+        processingtimes[order_id] = duration
         schedule[chosen].append(order_id) 
         seq_numbers[order_id] = len(schedule[chosen])
         free_at_time[chosen] = starttimes[order_id] + duration

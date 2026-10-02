@@ -1,3 +1,5 @@
+import pandas as pd
+
 # Validatie generalisatie code (testen op verschillende datasets)
 
 

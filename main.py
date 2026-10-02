@@ -1,14 +1,16 @@
 import pandas as pd
 import herbruikbare_functies as h
 import greedy_heuristiek as g
+# import validatie as v
 # import werkruimte_sander
 from pathlib import Path
 
+
 def main():
     # Inladen van de tabellen uit de excel file
-    orders = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Orders')
-    machines = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Machines')
-    setups = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Setups')
+    orders = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Orders')
+    machines = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Machines')
+    setups = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Setups')
     orders_info = orders.to_dict('records')
 
     # ----------------------------------------------------------------------------------------------------------------------------
@@ -29,7 +31,7 @@ def main():
     output_path = Path(__file__).parent / "Paintshop_Schedule_November.xlsx"
     data = h.schedule_data(orders_info, machines, setups)
     h.export_schedule(data, output_path)
-    print(f"Opgeslagen als: {output_path} \n")
+    print(f"Opgeslagen als: {output_path} \n Als de file niet in de map staat: Windows + R met c:\\Users\\Merel\\Paintshop_Schedule_November.xlsx \n")
 
 if __name__ == "__main__":
     main()

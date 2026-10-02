@@ -1,6 +1,9 @@
 import pandas as pd
 import greedy_heuristiek as g
 
+orders = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Orders')
+orders_info = orders.to_dict('records')
+
 # Functies om later te gebruiken
 def get_machine(machines, name): # filter de tabel door alleen die te pakken waar de naam matcht
     return machines[machines["Machine"] == name].iloc[0]
