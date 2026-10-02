@@ -39,9 +39,6 @@ def improving_search(schedule, machines, setups, orders_info):
         
                 for to_machine in machines_to_check: 
                     for j in range(len(schedule[to_machine]) + 1):
-        
-                        if from_machine == to_machine and j == i: # zelfde plek als waar die al staat
-                            continue
                             
                         new_schedule = {}
                         for m in schedule:
@@ -67,7 +64,7 @@ def improving_search(schedule, machines, setups, orders_info):
 
 
         iterations += 1 # tempstopconditie
-        if iterations > 3:
+        if iterations > 5:
             improved_this_round = False
         
     return schedule, new_cost
