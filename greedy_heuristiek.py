@@ -4,8 +4,8 @@ import pandas as pd
 import herbruikbare_functies as h
 
 
-# ----------------------------------------------------------------------------------------------------------------------------
-# Greedy constructive heuristic --> Earliest Due Date (EDD)
+# -------------------------------
+# # Greedy constructive heuristic --> Earliest Due Date (EDD)
 def greedy_schedule(orders_info, machines, setup_times):
     edd = sorted(orders_info, key=lambda order: order["Deadline"]) # maak een begin volgorde op basis van EDD
 
