@@ -64,7 +64,7 @@ def improving_search(schedule, machines, setups, orders_info):
 
         '''XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'''
         iterations += 1 # temp stopconditie
-        if iterations > 5:
+        if iterations > 2:
             improved_this_round = False
         
     return schedule, new_cost
@@ -118,7 +118,7 @@ def improving_search_bigger_neighbourhood(schedule, machines, setups, orders_inf
 
         '''XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'''
         iterations += 1 # temp stopconditie
-        if iterations > 5:
+        if iterations > 2:
             improved_this_round = False
         
     return schedule, new_cost

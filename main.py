@@ -24,7 +24,7 @@ def main():
     print('\n Greedy') # Print de machine schedule
     print(f'     {total_tardiness_greedy = :.2f}') # Print de total tardiness
     print(f'     {total_cost_penalties = :.2f}') # Print de total cost in penalties
-    print('\n Discrete Improving Search aan het laden... Dit kan even duren (ongeveer 30sec op mijn laptop in ieder geval)')
+    print('\n Discrete Improving Search aan het laden... Dit kan even duren (ongeveer 50sec op mijn laptop in ieder geval)')
 
     # -------------------------------
     # Stats Discrete Improved Search (Insertion)
@@ -36,6 +36,9 @@ def main():
     print('\n Improved Search Greedy (insertion)') # Print de machine schedule
     print(f'     {total_tardiness_imp_grd = :.2f}') # Print de total tardiness
     print(f'     {total_cost_imp_grd = :.2f} \n') # Print de total cost in penalties
+
+    # Verbetering
+    print(f"Na de improving search is de oplossing in verhouding {(abs(total_tardiness_imp_grd - total_cost_penalties)/total_cost_penalties)*100:.2f}% verbeterd! \n")
 
     # -------------------------------
     # exporteren van excel file ----- probleem? -> Windows R --> C:\Users\Merel\ --> november
