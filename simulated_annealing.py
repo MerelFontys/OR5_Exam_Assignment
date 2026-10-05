@@ -134,4 +134,3 @@ best_solution, best_tardiness, current_objective_history, best_objective_history
 
 print(f'best solution = {best_solution} \nbest tardiness = {best_tardiness}')
 
-
