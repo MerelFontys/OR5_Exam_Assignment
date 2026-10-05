@@ -56,12 +56,12 @@ def improving_search(schedule, machines, setups, orders_info):
                             improved_this_round = True
         
         schedule = best_schedule  # als alle mogelijkheden zijn doorlopen, past het schema aan
-        new_cost = best_cost_this_round
+        best_cost = best_cost_this_round
         '''XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'''
         iterations += 1 # temp stopconditie
         if iterations >= 2:
             improved_this_round = False
-    return schedule, new_cost
+    return schedule, best_cost
 
 
 
@@ -103,9 +103,9 @@ def improving_search_bigger_neighbourhood(schedule, machines, setups, orders_inf
                             improved_this_round = True
         
         schedule = best_schedule  # als alle mogelijkheden zijn doorlopen, past het schema aan
-        new_cost = best_cost_this_round
+        best_cost = best_cost_this_round
         '''XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'''
         iterations += 1 # temp stopconditie
         if iterations >= 2:
             improved_this_round = False
-    return schedule, new_cost
+    return schedule, best_cost
