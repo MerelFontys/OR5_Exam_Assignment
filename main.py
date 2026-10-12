@@ -2,16 +2,22 @@ import pandas as pd
 import herbruikbare_functies as h
 import greedy_heuristiek as g
 import improving_search as im
-# import validatie as v
+import validatie as v
 # import werkruimte_sander
 from pathlib import Path
 
 
-def main():
+def main(): 
+    # Validaties
+    if v.validatie_greedy_schedule == v.handmatig_planning:
+        print("\n Het genereren van de greedy planning is gevalideerd")
+    else:
+        print('Er gaat iets fout in het genereren van de greedy planning')
+    
     # Inladen van de tabellen uit de excel file
-    orders = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Orders')
-    machines = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Machines')
-    setups = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Setups')
+    orders = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Orders')
+    machines = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Machines')
+    setups = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Setups')
     orders_info = orders.to_dict('records')
 
     # -------------------------------
@@ -28,8 +34,8 @@ def main():
 
     # -------------------------------
     # Stats Discrete Improved Search (Insertion)
-    improved_greedy_schedule = im.improving_search(greedy_heur_sched, machines, setups, orders_info)[0]
-    improved_grd_comp_times = h.calculate_completion_times(improved_greedy_schedule, machines, setups)
+    improved_greedy_schedule = im.improving_search_bigger_neighbourhood(greedy_heur_sched, machines, setups, orders_info)[0]
+    improved_grd_comp_times = h.calculate_completion_times(improved_greedy_schedule, machines, setups, orders_info)
     total_tardiness_imp_grd = h.calculate_total_tardiness(orders_info, improved_grd_comp_times)
     total_cost_imp_grd = h.calculate_penalty_cost(orders_info, improved_grd_comp_times)
 
@@ -42,12 +48,11 @@ def main():
 
     # -------------------------------
     # exporteren van excel file ----- probleem? -> Windows R --> C:\Users\Merel\ --> november
-    output_path = Path(__file__).parent / "Paintshop_Schedule_November.xlsx"
+    output_path = Path(__file__).parent / "Paintshop_Schedule_September.xlsx"
     data = h.schedule_data(orders_info, machines, setups)
     h.export_schedule(data, output_path)
-    print(f"Opgeslagen als: {output_path} \n Als de file niet in de map staat: Windows + R met c:\\Users\\Merel\\Paintshop_Schedule_November.xlsx \n")
+    print(f"Opgeslagen als: {output_path} \n Als de file niet in de map staat: Windows + R met c:\\Users\\Merel\\Paintshop_Schedule_September.xlsx \n")
 
-    
 
 if __name__ == "__main__":
     main()

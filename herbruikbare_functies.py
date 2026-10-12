@@ -1,7 +1,7 @@
 import pandas as pd
 import greedy_heuristiek as g
 
-orders = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Orders')
+orders = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Orders')
 orders_info = orders.to_dict('records')
 
 # Functies om later te gebruiken
@@ -18,7 +18,7 @@ def processing_time(order, machine_row):
     return order['Surface'] / machine_row['Speed']
 
 # Bereken hoelang elke order duurt met afronden volgens een bepaald schedule
-def calculate_completion_times(schedule, machines, setup_times): # schedule is dan een dictionary met machine_naam: [lijst met orders in volgorde]
+def calculate_completion_times(schedule, machines, setup_times, orders_info): # schedule is dan een dictionary met machine_naam: [lijst met orders in volgorde]
     completion_times = {} # maak een dictionary met hoelang elke order duurt met afronden
     for name, order_sequence in schedule.items(): # bereken data voor alle orders (in volgorde van schedule) per machine
         machine = get_machine(machines, name)
@@ -56,6 +56,9 @@ def calculate_penalty_cost(orders_info, completion_times):
     return total_cost
 
 
+
+
+
 # ----------------------------------------------------------------------------------------------------------------------------
 # Alle data voor de schedule in excel   
 def schedule_data(orders_info, machines, setups): 
@@ -72,8 +75,8 @@ def schedule_data(orders_info, machines, setups):
         penalty_rate = order.get('Penalty', 0)
         
         tardiness = max(0, endtime - deadline)
-        penalty = tardiness * penalty_rate
-        cost = penalty
+        penalty = penalty_rate
+        cost = tardiness * penalty_rate
 
         rows.append({
             "Order": order_id,
@@ -91,7 +94,7 @@ def schedule_data(orders_info, machines, setups):
     return rows
 
 # Excel file met scchedule exporteren
-def export_schedule(schedule_data, filename='Paintshop_Schedule_November.xlsx'): 
+def export_schedule(schedule_data, filename='Paintshop_Schedule_September.xlsx'): 
     data_file = pd.DataFrame(schedule_data, columns=[
         "Order", "Machine", "SeqNo", "Setup", "Start", "Process", 
         "End", "Deadline", "Tardiness", "Penalty", "Cost"

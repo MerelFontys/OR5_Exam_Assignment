@@ -8,9 +8,9 @@ import improving_search as im
 voor nu greedy, maar pas alles aan naar beste manier 
 '''
 
-orders = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Orders')
-machines = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Machines')
-setups = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Setups')
+orders = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Orders')
+machines = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Machines')
+setups = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Setups')
 orders_info = orders.to_dict('records')
 
 '''

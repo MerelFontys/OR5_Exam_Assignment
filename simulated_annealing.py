@@ -6,9 +6,9 @@ import math as m
 import herbruikbare_functies as hf
 
 #Dataset inladen
-orders = pd.read_excel("PaintShop - November 2026.xlsx" , sheet_name = "Orders")
-machines = pd.read_excel ("PaintShop - November 2026.xlsx" , sheet_name="Machines")
-setups = pd.read_excel ("PaintShop - November 2026.xlsx" , sheet_name="Setups")
+orders = pd.read_excel("PaintShop - September 2026.xlsx" , sheet_name = "Orders")
+machines = pd.read_excel ("PaintShop - September 2026.xlsx" , sheet_name="Machines")
+setups = pd.read_excel ("PaintShop - September 2026.xlsx" , sheet_name="Setups")
 
 orders_info = orders.to_dict("records")
 

@@ -7,15 +7,15 @@ import random
 voor nu greedy, maar pas alles aan naar beste manier 
 '''
 
-orders = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Orders')
-machines = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Machines')
-setups = pd.read_excel("PaintShop - November 2026.xlsx", sheet_name = 'Setups')
+orders = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Orders')
+machines = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Machines')
+setups = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Setups')
 orders_info = orders.to_dict('records')
 
 def improving_search(schedule, machines, setups, orders_info): 
-    completion_times = h.calculate_completion_times(schedule, machines, setups)
+    completion_times = h.calculate_completion_times(schedule, machines, setups, orders_info)
     best_cost = h.calculate_penalty_cost(orders_info, completion_times)
-
+    random.seed(2) # zorgt dat het deterministisch is en reproduceerbaar
 
     ''' Sander local optimum voor andere stop!!!!!! Dit hou ik nu aan zelf:'''
 
@@ -47,7 +47,7 @@ def improving_search(schedule, machines, setups, orders_info):
                             insertion_place = j-1
         
                         new_schedule[to_machine].insert(insertion_place, order)
-                        new_completion_times = h.calculate_completion_times(new_schedule, machines, setups)
+                        new_completion_times = h.calculate_completion_times(new_schedule, machines, setups, orders_info)
                         possible_cost = h.calculate_penalty_cost(orders_info, new_completion_times)
         
                         if possible_cost < best_cost_this_round: # je bekijkt alle posities en onthoud 'm alleen als hij beter is dan alle andere mogelijkheden tot nu toe
@@ -59,14 +59,14 @@ def improving_search(schedule, machines, setups, orders_info):
         best_cost = best_cost_this_round
         '''XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'''
         iterations += 1 # temp stopconditie
-        if iterations >= 2:
+        if iterations >= 3:
             improved_this_round = False
     return schedule, best_cost
 
 
 
 def improving_search_bigger_neighbourhood(schedule, machines, setups, orders_info): 
-    completion_times = h.calculate_completion_times(schedule, machines, setups)
+    completion_times = h.calculate_completion_times(schedule, machines, setups, orders_info)
     best_cost = h.calculate_penalty_cost(orders_info, completion_times)
 
     ''' Sander local optimum voor andere stop!!!!!! Dit hou ik nu aan zelf:'''
@@ -82,7 +82,7 @@ def improving_search_bigger_neighbourhood(schedule, machines, setups, orders_inf
             for i in range(len(schedule[from_machine])):
                 order = schedule[from_machine][i]
         
-                for to_machine in machines: 
+                for to_machine in schedule: 
                     for j in range(len(schedule[to_machine]) + 1):
                         new_schedule = {}
                         for m in schedule:
@@ -94,7 +94,7 @@ def improving_search_bigger_neighbourhood(schedule, machines, setups, orders_inf
                             insertion_place = j-1
         
                         new_schedule[to_machine].insert(insertion_place, order)
-                        new_completion_times = h.calculate_completion_times(new_schedule, machines, setups)
+                        new_completion_times = h.calculate_completion_times(new_schedule, machines, setups, orders_info)
                         possible_cost = h.calculate_penalty_cost(orders_info, new_completion_times)
         
                         if possible_cost < best_cost_this_round: # je bekijkt alle posities en onthoud 'm alleen als hij beter is dan alle andere mogelijkheden tot nu toe
@@ -106,6 +106,6 @@ def improving_search_bigger_neighbourhood(schedule, machines, setups, orders_inf
         best_cost = best_cost_this_round
         '''XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'''
         iterations += 1 # temp stopconditie
-        if iterations >= 2:
+        if iterations >= 3:
             improved_this_round = False
     return schedule, best_cost
