@@ -38,9 +38,7 @@ def greedy_schedule(orders_info, machines, setup_times):
                 colour_change = 0
             else:  
                 colour_change = h.get_setup_time(previous_colour[machine], colour, setup_times)
-            # time_setup[order_id] = colour_change
             temp_starting_times[machine] = free_at_time[machine] + colour_change
-            # starttimes[order_id] = temp_starting_times[chosen]
         
         chosen = min(temp_starting_times, key=temp_starting_times.get)
 

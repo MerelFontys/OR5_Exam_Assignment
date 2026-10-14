@@ -4,20 +4,16 @@ import greedy_heuristiek as g
 import random
 
 '''
-voor nu greedy, maar pas alles aan naar beste manier 
+voor nu alleen greedy, maar pas alles aan naar beste manier
+zodra sander zijn stukken af heeft
 '''
-
-orders = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Orders')
-machines = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Machines')
-setups = pd.read_excel("PaintShop - September 2026.xlsx", sheet_name = 'Setups')
-orders_info = orders.to_dict('records')
 
 def improving_search(schedule, machines, setups, orders_info): 
     completion_times = h.calculate_completion_times(schedule, machines, setups, orders_info)
     best_cost = h.calculate_penalty_cost(orders_info, completion_times)
     random.seed(2) # zorgt dat het deterministisch is en reproduceerbaar
 
-    ''' Sander local optimum voor andere stop!!!!!! Dit hou ik nu aan zelf:'''
+    ''' Sander local optimum voor andere stop!!!!!! Dit hou ik nu aan zelf met iteraties'''
 
     iterations = 0 # temp stopconditie
     improved_this_round = True # Hij stopt wanneer er in een ronde geen verbeteringen meer zijn
@@ -57,12 +53,16 @@ def improving_search(schedule, machines, setups, orders_info):
         
         schedule = best_schedule  # als alle mogelijkheden zijn doorlopen, past het schema aan
         best_cost = best_cost_this_round
-        '''XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'''
+        '''Weghalen als Sander zijn stuk af heeft XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'''
         iterations += 1 # temp stopconditie
         if iterations >= 3:
             improved_this_round = False
     return schedule, best_cost
 
+'''
+discrete improving search door middel van insertion op 1 willekeurige andere machine 
+hij onthoud de beste locatie voor insertion --> best improvement
+'''
 
 
 def improving_search_bigger_neighbourhood(schedule, machines, setups, orders_info): 
@@ -109,3 +109,7 @@ def improving_search_bigger_neighbourhood(schedule, machines, setups, orders_inf
         if iterations >= 3:
             improved_this_round = False
     return schedule, best_cost
+'''
+zelfde functie als de vorige alleen bekijk je hier de locaties op ALLE machines
+grotere neighbourhood --> meer rekentijd --> beter optimum
+'''

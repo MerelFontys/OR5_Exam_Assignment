@@ -5,13 +5,14 @@ import greedy_heuristiek as g
 # Handmatig aanpassen van de bestandsnaam
 
 # Validatie functies/berekeningen (testen op kleine dataset)
-orders = pd.read_excel("PaintShop - Test.xlsx", sheet_name = 'Orders')
-machines = pd.read_excel("PaintShop - Test.xlsx", sheet_name = 'Machines')
-setups = pd.read_excel("PaintShop - Test.xlsx", sheet_name = 'Setups')
+test_data = "PaintShop - Test.xlsx"
+orders = pd.read_excel(test_data, sheet_name = 'Orders')
+machines = pd.read_excel(test_data, sheet_name = 'Machines')
+setups = pd.read_excel(test_data, sheet_name = 'Setups')
 orders_info = orders.to_dict('records')
 
-handmatig_planning = {'M1': ['O3'], 'M2': ['O1', 'O2']}
-validatie_greedy_schedule = g.greedy_schedule(orders_info, machines, setups)[0]
+planning_by_hand = {'M1': ['O3'], 'M2': ['O1', 'O2']}
+planning_by_code = g.greedy_schedule(orders_info, machines, setups)[0]
 # verder in main
 
 
