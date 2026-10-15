@@ -14,6 +14,7 @@ orders_info = orders.to_dict("records")
 
 '''Random eerste oplossing kiezen'''
 def random_initial_solution(orders, machines):
+    
     #lege schedule maken
     schedule = {}   
 
@@ -77,7 +78,7 @@ def swap_neighbourhood (schedule):
 def simulated_annealing (orders, machines, setups, start_temp, end_temp, cooling, max_iterations):
     #beginoplossing
     current_solution = random_initial_solution(orders, machines)
-    current_completion = hf.calculate_completion_times(current_solution, machines, setups)
+    current_completion = hf.calculate_completion_times(current_solution, machines, setups, orders_info)    
     current_tardiness = hf.calculate_total_tardiness (orders_info , current_completion)
 
     #beste oplossingen aanmaken en zetten aan eerste oplossing
@@ -95,25 +96,28 @@ def simulated_annealing (orders, machines, setups, start_temp, end_temp, cooling
         neighbour = swap_neighbourhood(current_solution)
 
         #tardiness van die buur
-        neighbour_completion = hf.calculate_completion_times (neighbour, machines, setups)
+        neighbour_completion = hf.calculate_completion_times(neighbour, machines, setups, orders_info)  
         neighbour_tardiness = hf.calculate_total_tardiness(orders_info , neighbour_completion)
-        
+        neighbour_penalty = hf.calculate_penalty_cost(orders_info, neighbour_completion)
         #verschil tussen neighbour en huidige oplossing
         difference = neighbour_tardiness - current_tardiness
 
         if difference < 0: 
             current_solution = neighbour 
             current_tardiness = neighbour_tardiness
+            current_penalty = neighbour_penalty
 
             if neighbour_tardiness < best_tardiness:
                 best_tardiness = neighbour_tardiness
                 best_solution = neighbour
+                best_penalty = neighbour_penalty
         else: 
             #alsnog soms accepteren
             prob = m.exp (-difference/T)
             if r.random() < prob: 
                     current_solution = neighbour 
-                    current_tardiness = neighbour_tardiness   
+                    current_tardiness = neighbour_tardiness
+                    current_penalty = neighbour_penalty
         #af laten koelen
         T = T * cooling
 
@@ -127,10 +131,12 @@ def simulated_annealing (orders, machines, setups, start_temp, end_temp, cooling
         print(f'Iteration = {i} Temperature = {T:.4f} Current Tardiness = {current_tardiness:.4f} Best Tardiness {best_tardiness:.4f}')
         if T < end_temp: 
             break
-    return (best_solution, best_tardiness, current_objective_history, best_objective_history, temperature_history, run_number) 
+    return (best_solution, best_tardiness, best_penalty, current_objective_history, best_objective_history, temperature_history, run_number) 
 
 
-best_solution, best_tardiness, current_objective_history, best_objective_history, temperature_history, run_number = simulated_annealing(orders, machines, setups, start_temp = 100000, end_temp = 0.01, cooling = 0.99, max_iterations=100000000000)
+best_solution, best_tardiness, best_penalty, current_objective_history, best_objective_history, temperature_history, run_number = simulated_annealing(orders, machines, setups, start_temp = 100000, end_temp = 0.01, cooling = 0.99, max_iterations=10000)
 
 print(f'best solution = {best_solution} \nbest tardiness = {best_tardiness}')
+
+print(f'de beste oplossing heeft een penalty van {best_penalty:.4f}')
 
