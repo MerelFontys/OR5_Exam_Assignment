@@ -1,115 +1,137 @@
+
 import pandas as pd
 import herbruikbare_functies as h
-import greedy_heuristiek as g
-import random
+import random as r
 
-'''
-voor nu alleen greedy, maar pas alles aan naar beste manier
-zodra sander zijn stukken af heeft
-'''
 
-def improving_search(schedule, machines, setups, orders_info): 
+def improving_search(schedule, machines, setups, orders_info):
+    """
+    Discrete Improving Search met een beperkte buurruimte.
+
+    Per order worden de invoegposities op de eigen machine en
+    één willekeurig gekozen andere machine onderzocht.
+    De beste verbetering van een ronde wordt geaccepteerd.
+
+    De functie stopt wanneer een volledige ronde geen verbetering
+    vindt binnen de onderzochte buurruimte.
+    """
     completion_times = h.calculate_completion_times(schedule, machines, setups, orders_info)
     best_cost = h.calculate_penalty_cost(orders_info, completion_times)
-    random.seed(2) # zorgt dat het deterministisch is en reproduceerbaar
+    r.seed(2)  # Maakt de keuzes reproduceerbaar elke keer dezelfde seed betekent elke keer dezelfde "random" keuzes
+    improved_this_round = True
+    while improved_this_round:
+        #zet improved this round naar false dat als er geen verbetering is dat de whileloop breekt
+        improved_this_round = False
+        best_schedule = schedule
+        best_cost_this_round = best_cost
 
-    ''' Sander local optimum voor andere stop!!!!!! Dit hou ik nu aan zelf met iteraties'''
+        for from_machine in schedule:
+            for i in range(len(schedule[from_machine])):
+                order = schedule[from_machine][i]
+                other_machines = []
+                # Kies één andere machine
+                for machine in schedule:
+                    if machine != from_machine:
+                        other_machines.append(machine)
+                machines_to_check = []
+                machines_to_check.append(from_machine)
+                if len (other_machines) > 0:
+                    other_chosen = r.choice(other_machines)
+                    machines_to_check.append(other_chosen)
+                for to_machine in machines_to_check:
+                    for j in range(len(schedule[to_machine]) + 1):
 
-    iterations = 0 # temp stopconditie
-    improved_this_round = True # Hij stopt wanneer er in een ronde geen verbeteringen meer zijn
-    
+                        # Maak een kopie van de huidige planning
+                        new_schedule ={}
+                        for machine in schedule:
+                            new_schedule[machine] = schedule[machine].copy()
+
+                        # Verwijder de order van de oorspronkelijke machine
+                        new_schedule[from_machine].pop(i)
+                        insertion_place = j
+                        # Corrigeer de positie als de order op dezelfde
+                        # machine naar een latere positie wordt verplaatst
+                        if from_machine == to_machine and j > i:
+                            insertion_place = j - 1
+
+                        # Voeg de order op de nieuwe positie in
+                        new_schedule[to_machine].insert(insertion_place, order)
+
+                        # Bereken de penaltykosten van de nieuwe planning
+                        new_completion_times = h.calculate_completion_times(new_schedule, machines, setups, orders_info)
+                        possible_cost = h.calculate_penalty_cost(orders_info, new_completion_times)
+
+                        # Bewaar de beste verbetering van deze ronde
+                        if possible_cost < best_cost_this_round:
+                            best_cost_this_round = possible_cost
+                            best_schedule = new_schedule
+                            improved_this_round = True
+
+        # Accepteer de beste verbetering van deze ronde
+        schedule = best_schedule
+        best_cost = best_cost_this_round
+
+    return schedule, best_cost
+
+
+def improving_search_bigger_neighbourhood(schedule, machines, setups, orders_info):
+    """
+    Discrete Improving Search met een grotere buurruimte.
+
+    Voor iedere order worden de invoegposities op alle machines
+    onderzocht. De beste verbetering van een ronde wordt geaccepteerd.
+
+    De functie stopt wanneer een volledige ronde geen verbetering
+    vindt. Dan is de oplossing lokaal optimaal ten opzichte van
+    alle onderzochte insertion moves.
+    """
+
+    completion_times = h.calculate_completion_times(schedule, machines, setups, orders_info)
+    best_cost = h.calculate_penalty_cost(orders_info, completion_times)
+    improved_this_round = True
+
     while improved_this_round:
         improved_this_round = False
         best_schedule = schedule
         best_cost_this_round = best_cost
-        
-        for from_machine in schedule: 
+
+        for from_machine in schedule:
             for i in range(len(schedule[from_machine])):
                 order = schedule[from_machine][i]
-                # check alleen 1 random machine ipv ze allemaal --> sneller
-                other_machines = [m for m in schedule if m != from_machine]
-                other_chosen = random.choice(other_machines)
-                machines_to_check = [from_machine, other_chosen]
-        
-                for to_machine in machines_to_check: 
+
+                # Onderzoek alle machines
+                for to_machine in schedule:
                     for j in range(len(schedule[to_machine]) + 1):
+
+                        # Maak een kopie van de huidige planning
                         new_schedule = {}
-                        for m in schedule:
-                            new_schedule[m] = schedule[m].copy()
-                            
-                        new_schedule[from_machine].pop(i) # verwijderen van de order die weg is van die machine
-                        insertion_place = j 
-                        if from_machine == to_machine and j > i: 
-                            insertion_place = j-1
-        
+                        for machine in schedule:
+                            new_schedule[machine] = schedule[machine].copy()
+
+                        # Verwijder de order van de oorspronkelijke machine
+                        new_schedule[from_machine].pop(i)
+                        insertion_place = j
+
+                        # Corrigeer de positie bij verplaatsen op dezelfde machine
+                        if from_machine == to_machine and j > i:
+                            insertion_place = j - 1
+
+                        # Voeg de order op de nieuwe positie in
                         new_schedule[to_machine].insert(insertion_place, order)
+
+                        # Bereken de penaltykosten van de nieuwe planning
                         new_completion_times = h.calculate_completion_times(new_schedule, machines, setups, orders_info)
                         possible_cost = h.calculate_penalty_cost(orders_info, new_completion_times)
-        
-                        if possible_cost < best_cost_this_round: # je bekijkt alle posities en onthoud 'm alleen als hij beter is dan alle andere mogelijkheden tot nu toe
+
+                        # Bewaar de beste verbetering van deze ronde
+                        if possible_cost < best_cost_this_round:
                             best_cost_this_round = possible_cost
                             best_schedule = new_schedule
                             improved_this_round = True
-        
-        schedule = best_schedule  # als alle mogelijkheden zijn doorlopen, past het schema aan
+
+        # Accepteer de beste verbetering van deze ronde
+        schedule = best_schedule
         best_cost = best_cost_this_round
-        '''Weghalen als Sander zijn stuk af heeft XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'''
-        iterations += 1 # temp stopconditie
-        if iterations >= 3:
-            improved_this_round = False
+
     return schedule, best_cost
 
-'''
-discrete improving search door middel van insertion op 1 willekeurige andere machine 
-hij onthoud de beste locatie voor insertion --> best improvement
-'''
-
-
-def improving_search_bigger_neighbourhood(schedule, machines, setups, orders_info): 
-    completion_times = h.calculate_completion_times(schedule, machines, setups, orders_info)
-    best_cost = h.calculate_penalty_cost(orders_info, completion_times)
-
-    ''' Sander local optimum voor andere stop!!!!!! Dit hou ik nu aan zelf:'''
-    iterations = 0 # temp stopconditie
-    improved_this_round = True # Hij stopt wanneer er in een ronde geen verbeteringen meer zijn
-    
-    while improved_this_round:
-        improved_this_round = False
-        best_schedule = schedule
-        best_cost_this_round = best_cost
-        
-        for from_machine in schedule: 
-            for i in range(len(schedule[from_machine])):
-                order = schedule[from_machine][i]
-        
-                for to_machine in schedule: 
-                    for j in range(len(schedule[to_machine]) + 1):
-                        new_schedule = {}
-                        for m in schedule:
-                            new_schedule[m] = schedule[m].copy()
-                            
-                        new_schedule[from_machine].pop(i) # verwijderen van de order die weg is van die machine
-                        insertion_place = j 
-                        if from_machine == to_machine and j > i: 
-                            insertion_place = j-1
-        
-                        new_schedule[to_machine].insert(insertion_place, order)
-                        new_completion_times = h.calculate_completion_times(new_schedule, machines, setups, orders_info)
-                        possible_cost = h.calculate_penalty_cost(orders_info, new_completion_times)
-        
-                        if possible_cost < best_cost_this_round: # je bekijkt alle posities en onthoud 'm alleen als hij beter is dan alle andere mogelijkheden tot nu toe
-                            best_cost_this_round = possible_cost
-                            best_schedule = new_schedule
-                            improved_this_round = True
-        
-        schedule = best_schedule  # als alle mogelijkheden zijn doorlopen, past het schema aan
-        best_cost = best_cost_this_round
-        '''XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'''
-        iterations += 1 # temp stopconditie
-        if iterations >= 3:
-            improved_this_round = False
-    return schedule, best_cost
-'''
-zelfde functie als de vorige alleen bekijk je hier de locaties op ALLE machines
-grotere neighbourhood --> meer rekentijd --> beter optimum
-'''

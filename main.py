@@ -3,9 +3,9 @@ import herbruikbare_functies as h
 import greedy_heuristiek as g
 import improving_search as im
 import validatie as v
-# import bestanden Sander
 from pathlib import Path
-
+import simulated_annealing as sa 
+import visualisatie as vi
 
 def main(): 
     # Validaties
@@ -48,13 +48,30 @@ def main():
     # Verbetering
     print(f"Na de improving search is de oplossing in verhouding {(abs(total_tardiness_imp_grd - total_cost_penalties)/total_cost_penalties)*100:.2f}% verbeterd! \n")
 
+    best_solution, best_tardiness, best_penalty, current_objective_history, best_objective_history, temperature_history, run_number = sa.simulated_annealing(orders, machines, setups, 
+                                                                                                                                                          start_temp = 100_000_000, 
+                                                                                                                                                          end_temp = 0.001, 
+                                                                                                                                                          cooling = 0.99, 
+                                                                                                                                                          max_iterations=1000000)
+
+    improved_sa_schedule = im.improving_search(best_solution, machines, setups, orders_info)[0]
+    improved_sa_comp_times = h.calculate_completion_times(improved_sa_schedule, machines, setups, orders_info)
+    total_tardiness_improved_sa = h.calculate_total_tardiness(orders_info, improved_sa_comp_times)
+    total_cost_improved_sa = h.calculate_penalty_cost(orders_info, improved_sa_comp_times)
+    print(f'Improved Search SA {total_cost_improved_sa = :.2f}')
+    #visualisaties simulated annealing
+    #simulated annealing progressie 
+    vi.plot_sa_progress(current_objective_history, best_objective_history, run_number)
+    #gannt chart 
+    schedule_data = sa.best_schedule_sa_data
+    vi.plot_schedule(schedule_data)
+    
     # -------------------------------
     # exporteren van excel file ----- probleem? -> Windows R --> C:\Users\Merel\ --> november
     output_path = Path(__file__).parent / "Paintshop_Schedule_September.xlsx"
     data = h.schedule_data(improved_greedy_schedule, orders_info, machines, setups)
     h.export_schedule(data, output_path)
     print(f"Opgeslagen als: {output_path} \n Als de file niet in de map staat: Windows + R met c:\\Users\\Merel\\Paintshop_Schedule_September.xlsx \n")
-
 
 if __name__ == "__main__":
     main()

@@ -6,10 +6,11 @@ import math as m
 import herbruikbare_functies as hf
 
 #Dataset inladen
-orders = pd.read_excel("PaintShop - September 2026.xlsx" , sheet_name = "Orders")
-machines = pd.read_excel ("PaintShop - September 2026.xlsx" , sheet_name="Machines")
-setups = pd.read_excel ("PaintShop - September 2026.xlsx" , sheet_name="Setups")
+naam_dataframe = "PaintShop - September 2026.xlsx" 
 
+orders = pd.read_excel(naam_dataframe , sheet_name= "Orders")
+machines = pd.read_excel(naam_dataframe, sheet_name="Machines")
+setups = pd.read_excel(naam_dataframe, sheet_name="Setups")
 orders_info = orders.to_dict("records")
 
 '''Random eerste oplossing kiezen'''
@@ -20,18 +21,14 @@ def random_initial_solution(orders, machines):
 
     #machinenamen een lijst van maken
     machine_names = machines ["Machine"].tolist()
-
-
     # lege lijsten maken
     for i in machine_names:
         schedule[i] = []
-
     # een lijst maken van orderids 
     order_ids = orders["Order"].tolist()
 
     # husselen
     r.shuffle(order_ids)
-
     # random verdelen
     for j in order_ids:
         gekozen_machine = r.choice(machine_names)
@@ -82,8 +79,14 @@ def simulated_annealing (orders, machines, setups, start_temp, end_temp, cooling
     current_tardiness = hf.calculate_total_tardiness (orders_info , current_completion)
 
     #beste oplossingen aanmaken en zetten aan eerste oplossing
-    best_solution = current_solution
-    best_tardiness = current_tardiness 
+    #dit moet omdat best_solution een dictionary is met lijsten erin
+    best_solution = current_solution.copy()
+    for machine in best_solution:
+        best_solution[machine] = best_solution[machine].copy()
+    best_tardiness = current_tardiness
+    best_penalty = hf.calculate_penalty_cost(orders_info, current_completion)
+
+    current_penalty = best_penalty
     T = start_temp
 
     #visualisatie data
@@ -95,29 +98,29 @@ def simulated_annealing (orders, machines, setups, start_temp, end_temp, cooling
         #buur aanmaken
         neighbour = swap_neighbourhood(current_solution)
 
-        #tardiness van die buur
         neighbour_completion = hf.calculate_completion_times(neighbour, machines, setups, orders_info)  
         neighbour_tardiness = hf.calculate_total_tardiness(orders_info , neighbour_completion)
         neighbour_penalty = hf.calculate_penalty_cost(orders_info, neighbour_completion)
         #verschil tussen neighbour en huidige oplossing
-        difference = neighbour_tardiness - current_tardiness
+        difference = neighbour_penalty - current_penalty
 
-        if difference < 0: 
-            current_solution = neighbour 
+        if difference < 0:
+            current_solution = neighbour
             current_tardiness = neighbour_tardiness
             current_penalty = neighbour_penalty
+        else:
+            prob = m.exp(-difference/T)
+            if r.random() < prob:
+                current_solution = neighbour
+                current_tardiness = neighbour_tardiness
+                current_penalty = neighbour_penalty
 
-            if neighbour_tardiness < best_tardiness:
-                best_tardiness = neighbour_tardiness
-                best_solution = neighbour
-                best_penalty = neighbour_penalty
-        else: 
-            #alsnog soms accepteren
-            prob = m.exp (-difference/T)
-            if r.random() < prob: 
-                    current_solution = neighbour 
-                    current_tardiness = neighbour_tardiness
-                    current_penalty = neighbour_penalty
+        if current_penalty < best_penalty:
+            best_penalty = current_penalty
+            best_tardiness = current_tardiness
+            best_solution = current_solution.copy()
+            for machine in best_solution:
+                best_solution[machine] = best_solution[machine].copy()
         #af laten koelen
         T = T * cooling
 
@@ -130,13 +133,6 @@ def simulated_annealing (orders, machines, setups, start_temp, end_temp, cooling
         #Voortgang printen 
         print(f'Iteration = {i} Temperature = {T:.4f} Current Tardiness = {current_tardiness:.4f} Best Tardiness {best_tardiness:.4f}')
         if T < end_temp: 
+            print("beëindigd door temperatuur")
             break
     return (best_solution, best_tardiness, best_penalty, current_objective_history, best_objective_history, temperature_history, run_number) 
-
-
-best_solution, best_tardiness, best_penalty, current_objective_history, best_objective_history, temperature_history, run_number = simulated_annealing(orders, machines, setups, start_temp = 100000, end_temp = 0.01, cooling = 0.99, max_iterations=10000)
-
-print(f'best solution = {best_solution} \nbest tardiness = {best_tardiness}')
-
-print(f'de beste oplossing heeft een penalty van {best_penalty:.4f}')
-

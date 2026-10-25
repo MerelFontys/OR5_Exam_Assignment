@@ -1,6 +1,5 @@
 # Import statements
 import math as m
-import pandas as pd
 import herbruikbare_functies as h
 
 
