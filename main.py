@@ -32,7 +32,7 @@ def main():
     print('\n Greedy') # Print de machine schedule
     print(f'     {total_tardiness_greedy = :.2f}') # Print de total tardiness
     print(f'     {total_cost_penalties = :.2f}') # Print de total cost in penalties
-    print('\n Discrete Improving Search aan het laden... Dit kan even duren (ongeveer 50sec op mijn laptop in ieder geval)')
+    print('\n Discrete Improving Search aan het laden... Dit kan even duren')
 
     # -------------------------------
     # Stats Discrete Improved Search (Insertion)
