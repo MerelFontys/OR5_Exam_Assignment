@@ -136,3 +136,6 @@ def simulated_annealing (orders, machines, setups, start_temp, end_temp, cooling
             print("beëindigd door temperatuur")
             break
     return (best_solution, best_tardiness, best_penalty, current_objective_history, best_objective_history, temperature_history, run_number) 
+
+(best_solution, best_tardiness, best_penalty,current_objective_history, best_objective_history,temperature_history, run_number) = simulated_annealing(orders, machines, setups,start_temp = 100_000_000 , end_temp = 0.001 , cooling =0.99 , max_iterations = 100_000) 
+best_schedule_sa_data = best_solution
