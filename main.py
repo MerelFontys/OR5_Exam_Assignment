@@ -59,17 +59,27 @@ def main():
     total_tardiness_improved_sa = h.calculate_total_tardiness(orders_info, improved_sa_comp_times)
     total_cost_improved_sa = h.calculate_penalty_cost(orders_info, improved_sa_comp_times)
     print(f'Improved Search SA {total_cost_improved_sa = :.2f}')
+
     #visualisaties simulated annealing
     #simulated annealing progressie 
     vi.plot_sa_progress(current_objective_history, best_objective_history, run_number)
     #gannt chart 
     schedule_data = sa.best_schedule_sa_data
     vi.plot_schedule(schedule_data)
+      
     
     # -------------------------------
     # exporteren van excel file ----- probleem? -> Windows R --> C:\Users\Merel\ --> november
+    # optimale schedule
+    print(f"\n {total_cost_improved_sa = :.2f}, {total_cost_imp_grd = :.2f}")
+    if total_cost_improved_sa < total_cost_imp_grd:
+        data = h.schedule_data(improved_sa_schedule, orders_info, machines, setups)
+        print(f"De improved schedule van simulated annealing is beter dan de improved schedule van greedy met een verschil van {total_cost_imp_grd - total_cost_improved_sa:.2f} in kosten")
+    if total_cost_improved_sa > total_cost_imp_grd:
+        data = h.schedule_data(improved_greedy_schedule, orders_info, machines, setups)
+        print(f"De improved schedule van greedy is beter dan de improved schedule van simulated annealing met een verschil van {total_cost_improved_sa - total_cost_imp_grd:.2f} in kosten")
+
     output_path = Path(__file__).parent / "Paintshop_Schedule_September.xlsx"
-    data = h.schedule_data(improved_greedy_schedule, orders_info, machines, setups)
     h.export_schedule(data, output_path)
     print(f"Opgeslagen als: {output_path} \n Als de file niet in de map staat: Windows + R met c:\\Users\\Merel\\Paintshop_Schedule_September.xlsx \n")
 
