@@ -60,6 +60,7 @@ def improving_search(schedule, machines, setups, orders_info):
                         # Bereken de penaltykosten van de nieuwe planning
                         new_completion_times = h.calculate_completion_times(new_schedule, machines, setups, orders_info)
                         possible_cost = h.calculate_penalty_cost(orders_info, new_completion_times)
+                        # validatie buuroplossing: print("order", order, "van", from_machine, "naar", to_machine, "positie", insertion_place)
 
                         # Bewaar de beste verbetering van deze ronde
                         if possible_cost < best_cost_this_round:
