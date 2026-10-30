@@ -63,8 +63,8 @@ def main():
     #simulated annealing progressie 
     vi.plot_sa_progress(current_objective_history, best_objective_history, run_number)
     #gannt chart 
-    schedule_data = sa.best_schedule_sa_data
-    vi.plot_schedule(schedule_data)
+    schedule_data_sa = h.schedule_data(improved_sa_schedule, orders_info, machines, setups)
+    vi.plot_schedule(schedule_data_sa)
     
     # -------------------------------
     # exporteren van excel file ----- probleem? -> Windows R --> C:\Users\Merel\ --> november
